@@ -35,7 +35,7 @@ public class GuiEditWaypoint extends GuiScreen {
 		this.parent = parent;
 		mc = Minecraft.getMinecraft();
 		waypoints = CivRadar.instance.getWaypointSave();
-		textFieldList = new ArrayList();
+		textFieldList = new ArrayList<GuiTextField>();
 		this.point = point;
 	}
 	

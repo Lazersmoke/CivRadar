@@ -40,7 +40,7 @@ public class RenderHandler extends Gui {
 	private Minecraft mc = Minecraft.getMinecraft();
 	private Color radarColor;
 	private double pingDelay = 63.0D;
-	private List entityList;
+	private List<?> entityList;
 	private float radarScale;
 	ArrayList<String> inRangePlayers;
 	private Color dubstepColor = Color.BLACK;
@@ -52,8 +52,10 @@ public class RenderHandler extends Gui {
 	
 	@SubscribeEvent
 	public void renderRadar(RenderGameOverlayEvent event) {
-		if(event.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS)
-			return;
+		if(event.getType() != RenderGameOverlayEvent.ElementType.CROSSHAIRS)
+		{
+			return;			
+		}
 		if(config.isDubstepMode()) {
 			GL11.glPushMatrix();
 			GL11.glScalef(2.0f, 2.0f, 2.0f);
@@ -79,15 +81,15 @@ public class RenderHandler extends Gui {
 			}
 			pingDelay -= 1.0D;
 			entityList = mc.theWorld.loadedEntityList;
-			ArrayList<String> newInRangePlayers = new ArrayList();
+			ArrayList<String> newInRangePlayers = new ArrayList<String>();
 			for(Object o : entityList) {
 				if(o instanceof EntityOtherPlayerMP) {
 					newInRangePlayers.add(((EntityOtherPlayerMP)o).getName());
 				}
 			}
-			ArrayList<String> temp = (ArrayList)newInRangePlayers.clone();
+			ArrayList<String> temp = (ArrayList<String>)newInRangePlayers.clone();
 			newInRangePlayers.removeAll(inRangePlayers);
-			for(String name : newInRangePlayers) {	
+			while(newInRangePlayers.iterator().hasNext()){
 				mc.thePlayer.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), 1.0F);
 			}
 			inRangePlayers = temp;
@@ -322,7 +324,7 @@ public class RenderHandler extends Gui {
 	private void renderWaypoint(Waypoint point, RenderWorldLastEvent event) {
 		String name = point.getName();
 		Color c = point.getColor();
-		float partialTickTime = event.partialTicks;
+		float partialTickTime = event.getPartialTicks();
 		double distance = point.getDistance(mc);
 		int maxView = mc.gameSettings.renderDistanceChunks * 22;
 		if(distance <= config.getMaxWaypointDistance() || config.getMaxWaypointDistance() < 0) {
