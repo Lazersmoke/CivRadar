@@ -40,8 +40,6 @@ public class RenderHandler extends Gui {
 	private List<?> entityList;
 	private float radarScale;
 	ArrayList<String> inRangePlayers;
-	private Color dubstepColor = Color.BLACK;
-	private Color dubstepColorBox = Color.BLACK;
 
 	public RenderHandler() {
 		inRangePlayers = new ArrayList<String>();
@@ -49,17 +47,6 @@ public class RenderHandler extends Gui {
 
 	@SubscribeEvent
 	public void renderRadar(RenderGameOverlayEvent event) {
-		if(config.isDubstepMode()) {
-			GL11.glPushMatrix();
-			GL11.glScalef(2.0f, 2.0f, 2.0f);
-			ScaledResolution res = new ScaledResolution(mc);
-			int halfWidth = res.getScaledWidth() / 4;
-			int stringWidth = mc.fontRendererObj.getStringWidth("Dank Memes Enabled");
-			int height = res.getScaledHeight() / 8;
-			mc.fontRendererObj.drawStringWithShadow("Dank Memes Enabled", halfWidth - (stringWidth / 2), height, dubstepColor.getRGB());
-			GL11.glScalef(1.0f, 1.0f, 1.0f);
-			GL11.glPopMatrix();
-			renderOverlayBox();
 		if (event.getType() != RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
 			return;
 		}
@@ -88,11 +75,6 @@ public class RenderHandler extends Gui {
 			//	mc.thePlayer.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), 1.0F);
 			//}
 			inRangePlayers = temp;
-			if(config.isDubstepMode()) {
-				Random rand = new Random();
-				dubstepColor = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-				dubstepColorBox = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), 0.2F);
-			}
 		}
 	}
 
@@ -113,9 +95,6 @@ public class RenderHandler extends Gui {
 	private void drawRadar() {
 
 		radarColor = config.getRadarColor();
-		if(config.isDubstepMode()) {
-			radarColor = dubstepColor;
-		}
 		radarScale = config.getRadarScale();
 
 		ScaledResolution res = new ScaledResolution(mc);
@@ -225,9 +204,6 @@ public class RenderHandler extends Gui {
 			int entityPosZ = (int) e.posZ;
 			int displayPosX = playerPosX - entityPosX;
 			int displayPosZ = playerPosZ - entityPosZ;
-				if(config.isDubstepMode()) {
-					renderPepe(displayPosX, displayPosZ);
-				} else if(e instanceof EntityItem) {
 			if (e != mc.thePlayer) {
 				if (e instanceof EntityItem) {
 					EntityItem item = (EntityItem) e;
@@ -253,21 +229,6 @@ public class RenderHandler extends Gui {
 				}
 			}
 		}
-	}
-	private void renderPepe(int x, int y) {
-		mc.getTextureManager().bindTexture(new ResourceLocation("civRadar/icons/pepe.png"));
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, config.getIconOpacity());
-		GL11.glEnable(3042);
-		GL11.glPushMatrix();
-		GL11.glScalef(0.5F, 0.5F, 0.5F);
-		GL11.glTranslatef(x + 1, y + 1, 0.0F);
-		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
-		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
-		GL11.glTranslatef(-x -1, -y -1, 0.0F);
-		GL11.glScalef(2.0F, 2.0F, 2.0F);
-		GL11.glDisable(2896);
-		GL11.glDisable(3042);
-		GL11.glPopMatrix();
 	}
 
 	private void renderItemIcon(int x, int y, ItemStack item) {
