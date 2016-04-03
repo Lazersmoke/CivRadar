@@ -1,10 +1,5 @@
 package com.biggestnerd.civradar;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.util.ResourceLocation;
 
 public class Entity {

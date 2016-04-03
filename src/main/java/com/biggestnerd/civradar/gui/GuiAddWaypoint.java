@@ -11,6 +11,7 @@ import com.biggestnerd.civradar.Waypoint;
 import com.biggestnerd.civradar.WaypointSave;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -124,8 +125,8 @@ public class GuiAddWaypoint extends GuiScreen {
 		for(GuiTextField field : textFieldList) {
 			field.drawTextBox();
 		}
-		this.drawRect(this.width / 2 - 100, this.height / 4 + 109, this.width / 2 + 100, this.height / 4 + 141, Color.BLACK.getRGB());
-		this.drawRect(this.width / 2 - 99, this.height / 4 + 110, this.width / 2 + 99, this.height / 4 + 140, new Color(redSlider.getCurrentValue(), greenSlider.getCurrentValue(), blueSlider.getCurrentValue()).getRGB());
+		Gui.drawRect(this.width / 2 - 100, this.height / 4 + 109, this.width / 2 + 100, this.height / 4 + 141, Color.BLACK.getRGB());
+		Gui.drawRect(this.width / 2 - 99, this.height / 4 + 110, this.width / 2 + 99, this.height / 4 + 140, new Color(redSlider.getCurrentValue(), greenSlider.getCurrentValue(), blueSlider.getCurrentValue()).getRGB());
 		super.drawScreen(i, j, k);
 	}
 }

@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
 
 import com.biggestnerd.civradar.CivRadar;
-import com.biggestnerd.civradar.Entity;
 import com.biggestnerd.civradar.Waypoint;
 
 public class GuiWaypointList extends GuiScreen {
