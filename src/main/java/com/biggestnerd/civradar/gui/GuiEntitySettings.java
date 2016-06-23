@@ -52,9 +52,12 @@ public class GuiEntitySettings extends GuiScreen implements GuiYesNoCallback {
 	}
 	
 	private void enableOrDisableSelectedEntity(boolean enabled) {
-		Class selectedEntityClass = entityList.get(selected).getEntityClass();
-		CivRadar.instance.getConfig().setRender(selectedEntityClass, enabled);
-		CivRadar.instance.saveConfig();
+		if(selected >= 0 && entityList.get(selected) != null)
+		{			
+			Class selectedEntityClass = entityList.get(selected).getEntityClass();
+			CivRadar.instance.getConfig().setRender(selectedEntityClass, enabled);
+			CivRadar.instance.saveConfig();
+		}
 	}
 	
 	protected void actionPerformed(GuiButton button) throws IOException	 {

@@ -17,7 +17,7 @@
 			"requiredMods": [ "Forge@[${minforgeversion},)"],
 			"logoFile": "",
 			"screenshots": [  ],
-			"useDependencyInformation": true
+			"useDependencyInformation": false
 		}
 	]
 }

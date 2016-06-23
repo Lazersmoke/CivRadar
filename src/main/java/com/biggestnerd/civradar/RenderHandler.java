@@ -221,7 +221,7 @@ public class RenderHandler extends Gui {
 					}
 				} else if (e instanceof EntityMinecart) {
 					if (config.isRender(EntityMinecart.class)) {
-						ItemStack cart = new ItemStack(Items.minecart);
+						ItemStack cart = new ItemStack(Items.MINECART);
 						renderItemIcon(displayPosX, displayPosZ, cart);
 					}
 				} else if (config.isRender(o.getClass())) {
