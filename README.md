@@ -1,4 +1,4 @@
-## CivRadar (FML 1.9) [![Build Status](http://vps40435.vps.ovh.ca:8080/job/CivRadar%201.9/badge/icon)](http://vps40435.vps.ovh.ca:8080/job/CivRadar%201.9/)
+## CivRadar (FML 1.9) [![Build Status](http://vps40435.vps.ovh.ca/job/CivRadar%201.9/badge/icon)](http://vps40435.vps.ovh.ca/job/CivRadar%201.9/)
 A radar mod for Civcraft
 
 All the gradle stuff is from [Lunatrius](https://github.com/Lunatrius/Schematica) so ty for that
