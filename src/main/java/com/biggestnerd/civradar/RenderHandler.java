@@ -3,6 +3,8 @@ package com.biggestnerd.civradar;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.entity.item.EntityBoat;
 import org.lwjgl.opengl.GL11;
 
 import com.biggestnerd.civradar.Config.NameLocation;
@@ -218,6 +220,11 @@ public class RenderHandler extends Gui {
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
+					}
+				} else if (e instanceof EntityBoat) {
+					if (config.isRender(EntityBoat.class)) {
+						ItemStack boat = new ItemStack(Items.BOAT);
+						renderItemIcon(displayPosX, displayPosZ, boat);
 					}
 				} else if (e instanceof EntityMinecart) {
 					if (config.isRender(EntityMinecart.class)) {

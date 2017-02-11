@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -95,6 +96,7 @@ public class Config {
 				new Entity(EntityWitch.class),
 				new Entity(EntityZombie.class),
 				new Entity(EntityItem.class),
+				new Entity(EntityBoat.class),
 				new Entity(EntityMinecart.class),
 				new Entity(EntityPlayer.class)
 				}));
