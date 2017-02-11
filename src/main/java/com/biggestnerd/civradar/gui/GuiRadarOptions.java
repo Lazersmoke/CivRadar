@@ -33,7 +33,7 @@ public class GuiRadarOptions extends GuiScreen {
 		this.buttonList.add(scaleSlider = new GuiSlider(6, this.width / 2 - 100, this.height / 4 + 56, 2.0F, 1.0F, "Radar Scale", CivRadar.instance.getConfig().getRadarScale()));
 		this.buttonList.add(coordToggle = new GuiButton(7, this.width / 2 - 100, this.height / 4 + 80, 100, 20, "Coordinates: "));
 		this.buttonList.add(new GuiButton(8, this.width / 2 + 1, this.height / 4 + 80, 100, 20, "Waypoint Shizz"));
-		this.buttonList.add(radarButton = new GuiButton(10, this.width / 2 - 100, this.height / 4 + 104, 100, 20, "Radar: "));
+		this.buttonList.add(radarButton = new GuiButton(9, this.width / 2 - 100, this.height / 4 + 104, 100, 20, "Radar: "));
 		this.buttonList.add(new GuiButton(100, this.width / 2 - 100, this.height / 4 + 128, "Done"));
 	}
 	
