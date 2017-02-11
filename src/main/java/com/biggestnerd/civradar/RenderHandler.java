@@ -26,12 +26,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+
+import static com.biggestnerd.civradar.RadarEntity.getResourceJM;
 
 public class RenderHandler extends Gui {
 
@@ -39,7 +40,7 @@ public class RenderHandler extends Gui {
 	private Minecraft mc = Minecraft.getMinecraft();
 	private Color radarColor;
 	private double pingDelay = 63.0D;
-	private List<?> entityList;
+	private List<Entity> entityList;
 	private float radarScale;
 	ArrayList<String> inRangePlayers;
 
@@ -198,8 +199,7 @@ public class RenderHandler extends Gui {
 		if (entityList == null) {
 			return;
 		}
-		for (Object o : entityList) {
-			Entity e = (Entity) o;
+		for (Entity e : entityList) {
 			int playerPosX = (int) mc.thePlayer.posX;
 			int playerPosZ = (int) mc.thePlayer.posZ;
 			int entityPosX = (int) e.posX;
@@ -231,8 +231,11 @@ public class RenderHandler extends Gui {
 						ItemStack cart = new ItemStack(Items.MINECART);
 						renderItemIcon(displayPosX, displayPosZ, cart);
 					}
-				} else if (config.isRender(o.getClass())) {
-					renderIcon(displayPosX, displayPosZ, config.getMob(o.getClass()).getResource());
+				} else if (config.isRender(e.getClass())) {
+					ResourceLocation resource = getResourceJM(e);
+					if (resource != null) {
+						renderIcon(displayPosX, displayPosZ, resource);
+					}
 				}
 			}
 		}

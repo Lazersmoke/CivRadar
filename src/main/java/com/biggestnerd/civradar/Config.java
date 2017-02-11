@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
@@ -98,7 +99,7 @@ public class Config {
 				new RadarEntity(EntityItem.class),
 				new RadarEntity(EntityBoat.class),
 				new RadarEntity(EntityMinecart.class),
-				new RadarEntity(EntityPlayer.class)
+				new RadarEntity(EntityPlayer.class),
 				}));
 	}
 
@@ -108,14 +109,14 @@ public class Config {
 		return allEntities;
 	}
 	
-	public void setRender(Class entityClass, boolean enabled) {
+	public void setRender(Class<? extends Entity> entityClass, boolean enabled) {
 		for(RadarEntity e : mobs) {
 			if(e.getEntityClass().equals(entityClass))
 				e.setEnabled(enabled);
 		}
 	}
 	
-	public boolean isRender(Class entityClass) {
+	public boolean isRender(Class<? extends Entity> entityClass) {
 		for(RadarEntity e : mobs) {
 			if(e.getEntityClass().equals(entityClass)) {
 				return e.isEnabled();
