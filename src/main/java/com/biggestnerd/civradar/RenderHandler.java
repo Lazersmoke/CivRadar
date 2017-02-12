@@ -242,7 +242,6 @@ public class RenderHandler extends Gui {
 		GlStateManager.pushMatrix();
 		GlStateManager.scale(0.5F, 0.5F, 0.5F);
 		GlStateManager.translate(x + 1, y + 1, 0.0F);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, config.getIconOpacity());
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 		mc.getRenderItem().renderItemIntoGUI(item, -8, -8);
 		GlStateManager.translate(-x - 1, -y - 1, 0.0F);
@@ -260,8 +259,6 @@ public class RenderHandler extends Gui {
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 		mc.getTextureManager().bindTexture(new ResourceLocation("civRadar/icons/player.png"));
 		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
-		GlStateManager.translate(-x - 1, -y - 1, 0.0F);
-		GlStateManager.scale(2.0F, 2.0F, 2.0F);
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
@@ -286,7 +283,7 @@ public class RenderHandler extends Gui {
 	private void renderIcon(int x, int y, ResourceLocation resource) {
 		mc.getTextureManager().bindTexture(resource);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, config.getIconOpacity());
-		GL11.glEnable(3042);
+		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5F, 0.5F, 0.5F);
 		GL11.glTranslatef(x + 1, y + 1, 0.0F);
@@ -295,7 +292,7 @@ public class RenderHandler extends Gui {
 		GL11.glTranslatef(-x - 1, -y - 1, 0.0F);
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
 		GL11.glDisable(2896);
-		GL11.glDisable(3042);
+		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
 	}
 
