@@ -12,12 +12,12 @@ import net.minecraft.client.gui.GuiYesNoCallback;
 
 import com.biggestnerd.civradar.CivRadar;
 import com.biggestnerd.civradar.Config;
-import com.biggestnerd.civradar.Entity;
+import com.biggestnerd.civradar.RadarEntity;
 
 public class GuiEntitySettings extends GuiScreen implements GuiYesNoCallback {
 
 	private final GuiScreen parent;
-	private final ArrayList<Entity> entityList;
+	private final ArrayList<RadarEntity> entityList;
 	private int selected = -1;
 	private GuiSlider opacitySlider;
 	private GuiButton enableButton;
@@ -111,7 +111,7 @@ public class GuiEntitySettings extends GuiScreen implements GuiYesNoCallback {
 		}
 		
 		protected void drawSlot(int entryId, int par2, int par3, int par4, int par5, int par6) {
-			Entity entity = GuiEntitySettings.this.entityList.get(entryId);
+			RadarEntity entity = GuiEntitySettings.this.entityList.get(entryId);
 			GuiEntitySettings.this.drawString(mc.fontRendererObj, entity.getEntityName(), par2 + 1, par3 + 1, Color.WHITE.getRGB());
 			GuiEntitySettings.this.drawString(mc.fontRendererObj, entity.isEnabled() ? "Enabled" : "Disabled", par2 + 215 - mc.fontRendererObj.getStringWidth("Disabled"), par3 + 1, entity.isEnabled() ? Color.GREEN.getRGB() : Color.RED.getRGB());
 		}

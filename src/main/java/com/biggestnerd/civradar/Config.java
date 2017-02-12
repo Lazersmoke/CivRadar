@@ -47,7 +47,7 @@ import com.google.gson.GsonBuilder;
 public class Config {
 	
 	private boolean enabled = true;
-	private ArrayList<Entity> mobs;
+	private ArrayList<RadarEntity> mobs;
 	private boolean renderCoordinates = true;
 	private boolean extraPlayerInfo = true;
 	private boolean playerNames = true;
@@ -65,58 +65,58 @@ public class Config {
 	private float pingVolume = 0.0F;
 	
 	public Config() {
-		mobs = new ArrayList<Entity>(Arrays.asList(new Entity[]{
-				new Entity(EntityBat.class), 
-				new Entity(EntityChicken.class),
-				new Entity(EntityCow.class),
-				new Entity(EntityHorse.class),
-				new Entity(EntityMooshroom.class),
-				new Entity(EntityOcelot.class),
-				new Entity(EntityPig.class),
-				new Entity(EntityRabbit.class),
-				new Entity(EntitySheep.class),
-				new Entity(EntitySquid.class),
-				new Entity(EntityVillager.class),
-				new Entity(EntityWolf.class),
-				new Entity(EntityBlaze.class),
-				new Entity(EntityCaveSpider.class),
-				new Entity(EntityCreeper.class),
-				new Entity(EntityEnderman.class),
-				new Entity(EntityGhast.class),
-				new Entity(EntityGolem.class),
-				new Entity(EntityGuardian.class),
-				new Entity(EntityIronGolem.class),
-				new Entity(EntityMagmaCube.class),
-				new Entity(EntityPigZombie.class),
-				new Entity(EntitySilverfish.class),
-				new Entity(EntitySkeleton.class),
-				new Entity(EntitySlime.class),
-				new Entity(EntitySnowman.class),
-				new Entity(EntitySpider.class),
-				new Entity(EntityWitch.class),
-				new Entity(EntityZombie.class),
-				new Entity(EntityItem.class),
-				new Entity(EntityBoat.class),
-				new Entity(EntityMinecart.class),
-				new Entity(EntityPlayer.class)
+		mobs = new ArrayList<RadarEntity>(Arrays.asList(new RadarEntity[]{
+				new RadarEntity(EntityBat.class),
+				new RadarEntity(EntityChicken.class),
+				new RadarEntity(EntityCow.class),
+				new RadarEntity(EntityHorse.class),
+				new RadarEntity(EntityMooshroom.class),
+				new RadarEntity(EntityOcelot.class),
+				new RadarEntity(EntityPig.class),
+				new RadarEntity(EntityRabbit.class),
+				new RadarEntity(EntitySheep.class),
+				new RadarEntity(EntitySquid.class),
+				new RadarEntity(EntityVillager.class),
+				new RadarEntity(EntityWolf.class),
+				new RadarEntity(EntityBlaze.class),
+				new RadarEntity(EntityCaveSpider.class),
+				new RadarEntity(EntityCreeper.class),
+				new RadarEntity(EntityEnderman.class),
+				new RadarEntity(EntityGhast.class),
+				new RadarEntity(EntityGolem.class),
+				new RadarEntity(EntityGuardian.class),
+				new RadarEntity(EntityIronGolem.class),
+				new RadarEntity(EntityMagmaCube.class),
+				new RadarEntity(EntityPigZombie.class),
+				new RadarEntity(EntitySilverfish.class),
+				new RadarEntity(EntitySkeleton.class),
+				new RadarEntity(EntitySlime.class),
+				new RadarEntity(EntitySnowman.class),
+				new RadarEntity(EntitySpider.class),
+				new RadarEntity(EntityWitch.class),
+				new RadarEntity(EntityZombie.class),
+				new RadarEntity(EntityItem.class),
+				new RadarEntity(EntityBoat.class),
+				new RadarEntity(EntityMinecart.class),
+				new RadarEntity(EntityPlayer.class)
 				}));
 	}
 
-	public ArrayList<Entity> getEntities() {
-		ArrayList<Entity> allEntities = new ArrayList<Entity>();
+	public ArrayList<RadarEntity> getEntities() {
+		ArrayList<RadarEntity> allEntities = new ArrayList<RadarEntity>();
 		allEntities.addAll(mobs);
 		return allEntities;
 	}
 	
 	public void setRender(Class entityClass, boolean enabled) {
-		for(Entity e : mobs) {
+		for(RadarEntity e : mobs) {
 			if(e.getEntityClass().equals(entityClass))
 				e.setEnabled(enabled);
 		}
 	}
 	
 	public boolean isRender(Class entityClass) {
-		for(Entity e : mobs) {
+		for(RadarEntity e : mobs) {
 			if(e.getEntityClass().equals(entityClass)) {
 				return e.isEnabled();
 			}
@@ -144,8 +144,8 @@ public class Config {
 		return radarScale;
 	}
 	
-	public Entity getMob(Class entityClass) {
-		for(Entity e : mobs) {
+	public RadarEntity getMob(Class entityClass) {
+		for(RadarEntity e : mobs) {
 			if(e.getEntityClass().equals(entityClass))
 				return e;
 		}

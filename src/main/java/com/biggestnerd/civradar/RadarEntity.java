@@ -2,12 +2,12 @@ package com.biggestnerd.civradar;
 
 import net.minecraft.util.ResourceLocation;
 
-public class Entity {
+public class RadarEntity {
 
 	private final String className;
 	private boolean enabled = true;
 	
-	public Entity(Class entityClass) {
+	public RadarEntity(Class entityClass) {
 		this.className = entityClass.getName();
 	}
 	
@@ -25,7 +25,7 @@ public class Entity {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return Entity.class;
+		return RadarEntity.class;
 	}
 	
 	public String getName() {
