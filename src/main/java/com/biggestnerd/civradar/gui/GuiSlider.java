@@ -7,13 +7,17 @@ import com.biggestnerd.civradar.CivRadar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 
+import java.text.DecimalFormat;
+
 public class GuiSlider extends GuiButton {
+	public static DecimalFormat df = new DecimalFormat("#.##");
+
 	private float sliderValue = 0.5F;
 	private boolean dragging;
 	private float minValue;
 	private float maxValue;
 	private String name;
-	
+
 	public GuiSlider(int par1, int par2, int par3, float maxValue, float minValue, String name, float currentValue) {
 		super(par1, par2, par3, 150, 20, name);
 		this.maxValue = maxValue;
@@ -66,7 +70,7 @@ public class GuiSlider extends GuiButton {
 	}
 	
 	public void updateDisplayString() {
-		this.displayString = (this.name + ": " + sliderValue);
+		this.displayString = (this.name + ": " + df.format(sliderValue));
 	}
 	
 	public float getCurrentValue() {
