@@ -1,36 +1,38 @@
 package com.biggestnerd.civradar;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.entity.item.EntityBoat;
-import org.lwjgl.opengl.GL11;
-
 import com.biggestnerd.civradar.Config.NameLocation;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static com.biggestnerd.civradar.RadarEntity.getResourceJM;
 
@@ -38,15 +40,9 @@ public class RenderHandler extends Gui {
 
 	private Config config = CivRadar.instance.getConfig();
 	private Minecraft mc = Minecraft.getMinecraft();
-	private Color radarColor;
-	private double pingDelay = 63.0D;
+	private int pingTicks = 0;
 	private List<Entity> entityList;
-	private float radarScale;
-	ArrayList<String> inRangePlayers;
-
-	public RenderHandler() {
-		inRangePlayers = new ArrayList<String>();
-	}
+	private ArrayList<String> inRangePlayers = new ArrayList<String>();
 
 	@SubscribeEvent
 	public void renderRadar(RenderGameOverlayEvent event) {
@@ -61,23 +57,23 @@ public class RenderHandler extends Gui {
 	@SubscribeEvent
 	public void onTick(ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.START && mc.theWorld != null) {
-			if (pingDelay <= -10.0D) {
-				pingDelay = 63.0D;
-			}
-			pingDelay -= 1.0D;
+			pingTicks -= 1;
 			entityList = mc.theWorld.loadedEntityList;
 			ArrayList<String> newInRangePlayers = new ArrayList<String>();
-			for (Object o : entityList) {
-				if (o instanceof EntityOtherPlayerMP) {
-					newInRangePlayers.add(((EntityOtherPlayerMP) o).getName());
+			for (Entity e : entityList) {
+				if (e instanceof EntityOtherPlayerMP) {
+					newInRangePlayers.add(e.getName());
 				}
 			}
-			ArrayList<String> temp = (ArrayList<String>) newInRangePlayers.clone();
+			ArrayList<String> updatedInRangePlayers = (ArrayList<String>) newInRangePlayers.clone();
 			newInRangePlayers.removeAll(inRangePlayers);
-			//while (newInRangePlayers.iterator().hasNext()) {
-			//	mc.thePlayer.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), 1.0F);
-			//}
-			inRangePlayers = temp;
+			inRangePlayers = updatedInRangePlayers;
+
+			for (String name : newInRangePlayers) {
+				float playerPitch = 10f * new Random(name.hashCode()).nextFloat(); // unique for each player, but always the same
+				mc.thePlayer.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), playerPitch);
+				pingTicks = 20;
+			}
 		}
 	}
 
@@ -96,62 +92,72 @@ public class RenderHandler extends Gui {
 	}
 
 	private void drawRadar() {
+		int radarDistance = config.getRadarDistance();
 
-		radarColor = config.getRadarColor();
-		radarScale = config.getRadarScale();
+		Color radarColor = config.getRadarColor();
 
 		ScaledResolution res = new ScaledResolution(mc);
-		int width = res.getScaledWidth();
+
+		int radarDisplayDiameter = (int) (res.getScaledHeight() * config.getRadarSize());
+		int radarDisplayRadius = radarDisplayDiameter / 2;
+
+		// top/bottom and left/right (0 or 1 x and y) means touching the window frame
+		int windowInnerWidth = res.getScaledWidth() - radarDisplayDiameter;
+		int windowInnerHeight = res.getScaledHeight() - radarDisplayDiameter;
+
+		int radarDisplayX = radarDisplayRadius + 1 + (int) (config.getRadarX() * (windowInnerWidth - 2));
+		int radarDisplayY = radarDisplayRadius + 1 + (int) (config.getRadarY() * (windowInnerHeight - 2));
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(width - (65 * radarScale) + (config.getRadarX()), (65 * radarScale) + (config.getRadarY()), 0.0F);
-		GlStateManager.scale(1.0F, 1.0F, 1.0F);
+		GlStateManager.translate(radarDisplayX, radarDisplayY, 0.0F);
 
 		if (config.isRenderCoordinates()) {
 			String coords = "(" + (int) mc.thePlayer.posX + "," + (int) mc.thePlayer.posY + "," + (int) mc.thePlayer.posZ + ")";
-			mc.fontRendererObj.drawStringWithShadow(coords, -(mc.fontRendererObj.getStringWidth(coords) / 2), 65 * radarScale, 14737632);
+			int  stringX = -(mc.fontRendererObj.getStringWidth(coords) / 2);
+			mc.fontRendererObj.drawStringWithShadow(coords, stringX, radarDisplayRadius, 0xe0e0e0);
 		}
 
-		GlStateManager.scale(radarScale, radarScale, radarScale);
 		GlStateManager.rotate(-mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 
-		drawCircle(0, 0, 63.0D, radarColor, true);
+		// background
+		drawCircle(0, 0, radarDisplayRadius, radarColor, true);
 		GlStateManager.glLineWidth(2.0f);
-		drawCircle(0, 0, 63.0D, radarColor, false);
+
+		// border
+		drawCircle(0, 0, radarDisplayRadius, radarColor, false);
 		GlStateManager.glLineWidth(1.0f);
 
-		if (pingDelay > 0) {
-			drawCircle(0, 0, 63.0D - pingDelay, radarColor, false);
+		if (pingTicks > 0) {
+			drawCircle(0, 0, radarDisplayRadius * pingTicks / 20f, radarColor, false);
 		}
+
 		GlStateManager.glLineWidth(2.0f);
 		GlStateManager.disableTexture2D();
 		GlStateManager.disableLighting();
 
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer buffer = tessellator.getBuffer();
-
-		buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-		GlStateManager.color(radarColor.getRed() / 255.0F, radarColor.getGreen() / 255.0F, radarColor.getBlue() / 255.0F, config.getRadarOpacity() + 0.5F);
-		buffer.pos(0.0D, -63.0D, 0.0D);
-		buffer.pos(0.0D, 63.0D, 0.0D);
-		buffer.pos(-63.0D, 0.0D, 0.0D);
-		buffer.pos(63.0D, 0.0D, 0.0D);
-		buffer.pos(-44.5D, -44.5D, 0.0D);
-		buffer.pos(44.5D, 44.5D, 0.0D);
-		buffer.pos(-44.5D, 44.5D, 0.0D);
-		buffer.pos(44.5D, -44.5D, 0.0D);
-		tessellator.draw();
+		// eight concentric lines
+		GlStateManager.glBegin(GL11.GL_LINES);
+		final float cos45 = 0.7071f;
+		float diagonalOffset = cos45 * radarDisplayRadius;
+		GlStateManager.glVertex3f(0f, -radarDisplayRadius, 0f);
+		GlStateManager.glVertex3f(0f, radarDisplayRadius, 0f);
+		GlStateManager.glVertex3f(-radarDisplayRadius, 0f, 0f);
+		GlStateManager.glVertex3f(radarDisplayRadius, 0f, 0f);
+		GlStateManager.glVertex3f(-diagonalOffset, -diagonalOffset, 0f);
+		GlStateManager.glVertex3f(diagonalOffset, diagonalOffset, 0f);
+		GlStateManager.glVertex3f(-diagonalOffset, diagonalOffset, 0f);
+		GlStateManager.glVertex3f(diagonalOffset, -diagonalOffset, 0f);
+		GlStateManager.glEnd();
 
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
 
 		drawRadarIcons();
 
+		// player location
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
-
 		drawTriangle(0, 0, Color.WHITE);
-		GlStateManager.scale(2.0F, 2.0F, 2.0F);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
 		GlStateManager.popMatrix();
 	}
 
@@ -248,7 +254,6 @@ public class RenderHandler extends Gui {
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 		mc.getRenderItem().renderItemIntoGUI(item, -8, -8);
 		GlStateManager.translate(-x - 1, -y - 1, 0.0F);
-		GlStateManager.scale(2.0F, 2.0F, 2.0F);
 		GlStateManager.disableLighting();
 		GlStateManager.popMatrix();
 	}
@@ -260,8 +265,13 @@ public class RenderHandler extends Gui {
 		GlStateManager.scale(0.5F, 0.5F, 0.5F);
 		GlStateManager.translate(x + 1, y + 1, 0.0F);
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
-		mc.getTextureManager().bindTexture(new ResourceLocation("civRadar/icons/player.png"));
-		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
+
+		this.mc.getTextureManager().bindTexture(new NetworkPlayerInfo(player.getGameProfile()).getLocationSkin());
+		Gui.drawScaledCustomSizeModalRect(0, 0, 8, 8, 8, 8, 8, 8, 64, 64);
+		if (player.isWearing(EnumPlayerModelParts.HAT)) {
+			Gui.drawScaledCustomSizeModalRect(0, 0, 40, 8, 8, 8, 8, 8, 64, 64);
+		}
+
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
@@ -278,7 +288,6 @@ public class RenderHandler extends Gui {
 			}
 			int yOffset = config.getNameLocation() == NameLocation.below ? 10 : -10;
 			drawCenteredString(mc.fontRendererObj, playerName, x + 8, y + yOffset, Color.WHITE.getRGB());
-			GlStateManager.scale(2.0F, 2.0F, 2.0F);
 			GlStateManager.popMatrix();
 		}
 	}
@@ -292,9 +301,7 @@ public class RenderHandler extends Gui {
 		GL11.glTranslatef(x + 1, y + 1, 0.0F);
 		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
-		GL11.glTranslatef(-x - 1, -y - 1, 0.0F);
-		GL11.glScalef(2.0F, 2.0F, 2.0F);
-		GL11.glDisable(2896);
+//		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
 	}

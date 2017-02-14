@@ -30,7 +30,7 @@ public class GuiRadarOptions extends GuiScreen {
 		this.buttonList.add(opacitySlider = new GuiSlider(3, this.width / 2 -100, this.height / 4 + 8, 1.0F, 0.0F, "Radar Opacity", CivRadar.instance.getConfig().getRadarOpacity()));
 		this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 32, 100, 20, "Edit Radar Color"));
 		this.buttonList.add(new GuiButton(5, this.width / 2 + 1, this.height /4 + 32, 100, 20, "Edit Player Options"));
-		this.buttonList.add(scaleSlider = new GuiSlider(6, this.width / 2 - 100, this.height / 4 + 56, 2.0F, 1.0F, "Radar Scale", CivRadar.instance.getConfig().getRadarScale()));
+		this.buttonList.add(scaleSlider = new GuiSlider(6, this.width / 2 - 100, this.height / 4 + 56, 1.0F, .1F, "Radar Size", CivRadar.instance.getConfig().getRadarSize()));
 		this.buttonList.add(coordToggle = new GuiButton(7, this.width / 2 - 100, this.height / 4 + 80, 100, 20, "Coordinates: "));
 		this.buttonList.add(new GuiButton(8, this.width / 2 + 1, this.height / 4 + 80, 100, 20, "Waypoint Shizz"));
 		this.buttonList.add(radarButton = new GuiButton(9, this.width / 2 - 100, this.height / 4 + 104, 100, 20, "Radar: "));
@@ -77,7 +77,7 @@ public class GuiRadarOptions extends GuiScreen {
 	public void updateScreen() {
 		Config config = CivRadar.instance.getConfig();
 		config.setRadarOpacity(opacitySlider.getCurrentValue());
-		config.setRadarScale(scaleSlider.getCurrentValue());
+		config.setRadarSize(scaleSlider.getCurrentValue());
 		coordToggle.displayString = "Coordinates: " + (CivRadar.instance.getConfig().isRenderCoordinates() ? "On" : "Off");
 		radarButton.displayString = "Radar: " + (CivRadar.instance.getConfig().isEnabled() ? "On" : "Off");
 		CivRadar.instance.saveConfig();

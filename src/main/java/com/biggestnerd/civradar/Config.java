@@ -52,15 +52,17 @@ public class Config {
 	private boolean renderCoordinates = true;
 	private boolean extraPlayerInfo = true;
 	private boolean playerNames = true;
-	private int radarX = 0;
-	private int radarY = 0;
+	private float radarX = 0; // from 0 to 1, for left to right
+	private float radarY = 0; // from 0 to 1, for top to bottom
 	private int maxWaypointDistance = 500;
 	private float radarOpacity = 0.5F;
 	private float iconOpacity = 1.0F;
 	private float waypointOpcaity = 0.5F;
 	private boolean renderWaypoints = true;
 	private Color radarColor = new Color(0.0F, 0.5F, 0.5F);
-	private float radarScale = 1.0F;
+	private float radarSize = .4F; // ratio of radar diameter / window height
+	private int radarDistance = 64; // entity render distance in blocks
+
 	public enum NameLocation {above,below};
 	private NameLocation nameLocation = NameLocation.below;
 	private float pingVolume = 0.0F;
@@ -137,14 +139,20 @@ public class Config {
 		}
 	}
 	
-	public void setRadarScale(float radarScale) {
-		this.radarScale = radarScale;
+	public void setRadarSize(float radarSize) {
+		this.radarSize = radarSize;
 	}
-	
-	public float getRadarScale() {
-		return radarScale;
+	public float getRadarSize() {
+		return radarSize;
 	}
-	
+
+	public void setRadarDistance(int radarDistance) {
+		this.radarDistance = radarDistance;
+	}
+	public int getRadarDistance() {
+		return radarDistance;
+	}
+
 	public RadarEntity getMob(Class entityClass) {
 		for(RadarEntity e : mobs) {
 			if(e.getEntityClass().equals(entityClass))
@@ -202,16 +210,16 @@ public class Config {
 		this.renderCoordinates = renderCoordinates;
 	}
 	
-	public int getRadarX() {
+	public float getRadarX() {
 		return radarX;
 	}
-	public void setRadarX(int radarX) {
+	public void setRadarX(float radarX) {
 		this.radarX = radarX;
 	}
-	public int getRadarY() {
+	public float getRadarY() {
 		return radarY;
 	}
-	public void setRadarY(int radarY) {
+	public void setRadarY(float radarY) {
 		this.radarY = radarY;
 	}
 	
