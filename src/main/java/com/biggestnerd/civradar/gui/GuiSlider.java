@@ -30,10 +30,10 @@ public class GuiSlider extends GuiButton {
 		return 0;
 	}
 
-	protected void mouseDragged(Minecraft par1Minecraft, int par2, int par3) {
+	protected void mouseDragged(Minecraft par1Minecraft, int x, int y) {
 		if (this.visible) {
 			if (this.dragging) {
-				this.sliderValue = ((par2 - (float) (this.xPosition + 4)) / (float) (this.width - 8)) + minValue;
+				this.sliderValue = ((float) (x - 4 - xPosition)) * (maxValue - minValue) / (width - 8) + minValue;
 				if (this.sliderValue < minValue) {
 					this.sliderValue = minValue;
 				} else if (this.sliderValue > maxValue) {
@@ -41,8 +41,8 @@ public class GuiSlider extends GuiButton {
 				}
 			}
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			drawTexturedModalRect(this.xPosition + (int) ((this.sliderValue - minValue) * (this.width - 8)), this.yPosition, 0, 66, 4, 20);
-			drawTexturedModalRect(this.xPosition + (int) ((this.sliderValue - minValue) * (this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
+			drawTexturedModalRect(this.xPosition + (int) ((this.sliderValue - minValue) / (maxValue - minValue) * (this.width - 8)), this.yPosition, 0, 66, 4, 20);
+			drawTexturedModalRect(this.xPosition + (int) ((this.sliderValue - minValue) / (maxValue - minValue) * (this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
 		}
 	}
 
