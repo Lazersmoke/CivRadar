@@ -62,11 +62,12 @@ public class Config {
 	private Color radarColor = new Color(0.0F, 0.5F, 0.5F);
 	private float radarSize = .4F; // ratio of radar diameter / window height
 	private int radarDistance = 64; // entity render distance in blocks
+	private float iconScale = 1; // icon size in blocks
 
 	public enum NameLocation {above,below};
 	private NameLocation nameLocation = NameLocation.below;
 	private float pingVolume = 0.0F;
-	
+
 	public Config() {
 		mobs = new ArrayList<RadarEntity>(Arrays.asList(new RadarEntity[]{
 				new RadarEntity(EntityBat.class),
@@ -245,6 +246,14 @@ public class Config {
 		this.iconOpacity = iconOpacity;
 	}
 
+	public float getIconScale() {
+		return iconScale;
+	}
+
+	public void setIconScale(float iconScale) {
+		this.iconScale = iconScale;
+	}
+
 	public float getWaypointOpcaity() {
 		return waypointOpcaity;
 	}
@@ -252,7 +261,7 @@ public class Config {
 	public void setWaypointOpcaity(float waypointOpcaity) {
 		this.waypointOpcaity = waypointOpcaity;
 	}
-	
+
 	public boolean isRenderWaypoints() {
 		return renderWaypoints;
 	}

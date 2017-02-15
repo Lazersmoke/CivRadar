@@ -14,8 +14,8 @@ public class GuiSlider extends GuiButton {
 
 	private float sliderValue = 0.5F;
 	private boolean dragging;
-	private float minValue;
-	private float maxValue;
+	float minValue;
+	float maxValue;
 	private String name;
 
 	public GuiSlider(int par1, int par2, int par3, float maxValue, float minValue, String name, float currentValue) {

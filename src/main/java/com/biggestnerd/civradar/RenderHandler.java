@@ -1,12 +1,13 @@
 package com.biggestnerd.civradar;
 
 import com.biggestnerd.civradar.Config.NameLocation;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -32,9 +33,11 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static com.biggestnerd.civradar.RadarEntity.getResourceJM;
+import static com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN;
 
 public class RenderHandler extends Gui {
 
@@ -43,6 +46,8 @@ public class RenderHandler extends Gui {
 	private int pingTicks = 0;
 	private List<Entity> entityList;
 	private ArrayList<String> inRangePlayers = new ArrayList<String>();
+	private float iconScale;
+	private float radarScale;
 
 	@SubscribeEvent
 	public void renderRadar(RenderGameOverlayEvent event) {
@@ -70,7 +75,7 @@ public class RenderHandler extends Gui {
 			inRangePlayers = updatedInRangePlayers;
 
 			for (String name : newInRangePlayers) {
-				float playerPitch = 10f * new Random(name.hashCode()).nextFloat(); // unique for each player, but always the same
+				float playerPitch = .5f + 1.5f * new Random(name.hashCode()).nextFloat(); // unique for each player, but always the same
 				mc.thePlayer.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), playerPitch);
 				pingTicks = 20;
 			}
@@ -92,14 +97,14 @@ public class RenderHandler extends Gui {
 	}
 
 	private void drawRadar() {
-		int radarDistance = config.getRadarDistance();
-
 		Color radarColor = config.getRadarColor();
 
 		ScaledResolution res = new ScaledResolution(mc);
 
-		int radarDisplayDiameter = (int) (res.getScaledHeight() * config.getRadarSize());
+		int radarDisplayDiameter = (int) ((res.getScaledHeight() - 2) * config.getRadarSize());
 		int radarDisplayRadius = radarDisplayDiameter / 2;
+		radarScale = (float) radarDisplayRadius / config.getRadarDistance();
+		iconScale = config.getIconScale() / 8;
 
 		// top/bottom and left/right (0 or 1 x and y) means touching the window frame
 		int windowInnerWidth = res.getScaledWidth() - radarDisplayDiameter;
@@ -109,7 +114,7 @@ public class RenderHandler extends Gui {
 		int radarDisplayY = radarDisplayRadius + 1 + (int) (config.getRadarY() * (windowInnerHeight - 2));
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(radarDisplayX, radarDisplayY, 0.0F);
+		GlStateManager.translate(radarDisplayX, radarDisplayY, 0);
 
 		if (config.isRenderCoordinates()) {
 			String coords = "(" + (int) mc.thePlayer.posX + "," + (int) mc.thePlayer.posY + "," + (int) mc.thePlayer.posZ + ")";
@@ -152,12 +157,16 @@ public class RenderHandler extends Gui {
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
 
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(radarScale, radarScale, radarScale);
 		drawRadarIcons();
+		GlStateManager.popMatrix();
 
 		// player location
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 		drawTriangle(0, 0, Color.WHITE);
 
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.popMatrix();
 	}
 
@@ -206,107 +215,131 @@ public class RenderHandler extends Gui {
 			return;
 		}
 		for (Entity e : entityList) {
-			int playerPosX = (int) mc.thePlayer.posX;
-			int playerPosZ = (int) mc.thePlayer.posZ;
-			int entityPosX = (int) e.posX;
-			int entityPosZ = (int) e.posZ;
-			int displayPosX = playerPosX - entityPosX;
-			int displayPosZ = playerPosZ - entityPosZ;
-			if (e != mc.thePlayer) {
-				if (e instanceof EntityItem) {
-					EntityItem item = (EntityItem) e;
-					if (config.isRender(EntityItem.class)) {
-						renderItemIcon(displayPosX, displayPosZ, item.getEntityItem());
+			if (e == mc.thePlayer)
+				continue;
+
+			double playerPosX = mc.thePlayer.posX;
+			double playerPosZ = mc.thePlayer.posZ;
+			double entityPosX = e.posX;
+			double entityPosZ = e.posZ;
+			double displayPosX = playerPosX - entityPosX;
+			double displayPosZ = playerPosZ - entityPosZ;
+			if (e instanceof EntityItem) {
+				EntityItem item = (EntityItem) e;
+				if (config.isRender(EntityItem.class)) {
+					renderItemIcon(displayPosX, displayPosZ, item.getEntityItem());
+				}
+			} else if (e instanceof EntityOtherPlayerMP) {
+				if (config.isRender(EntityPlayer.class)) {
+					EntityOtherPlayerMP eop = (EntityOtherPlayerMP) e;
+					try {
+						renderPlayerHeadIcon(displayPosX, displayPosZ, eop);
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				} else if (e instanceof EntityOtherPlayerMP) {
-					if (config.isRender(EntityPlayer.class)) {
-						EntityOtherPlayerMP eop = (EntityOtherPlayerMP) e;
-						try {
-							renderPlayerHeadIcon(displayPosX, displayPosZ, eop);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				} else if (e instanceof EntityBoat) {
-					if (config.isRender(EntityBoat.class)) {
-						ItemStack boat = new ItemStack(Items.BOAT);
-						renderItemIcon(displayPosX, displayPosZ, boat);
-					}
-				} else if (e instanceof EntityMinecart) {
-					if (config.isRender(EntityMinecart.class)) {
-						ItemStack cart = new ItemStack(Items.MINECART);
-						renderItemIcon(displayPosX, displayPosZ, cart);
-					}
-				} else if (config.isRender(e.getClass())) {
-					ResourceLocation resource = getResourceJM(e);
-					if (resource != null) {
-						renderIcon(displayPosX, displayPosZ, resource);
-					}
+				}
+			} else if (e instanceof EntityBoat) {
+				if (config.isRender(EntityBoat.class)) {
+					ItemStack boat = new ItemStack(Items.BOAT);
+					renderItemIcon(displayPosX, displayPosZ, boat);
+				}
+			} else if (e instanceof EntityMinecart) {
+				if (config.isRender(EntityMinecart.class)) {
+					ItemStack cart = new ItemStack(Items.MINECART);
+					renderItemIcon(displayPosX, displayPosZ, cart);
+				}
+			} else if (config.isRender(e.getClass())) {
+				ResourceLocation resource = getResourceJM(e);
+				if (resource != null) {
+					renderIcon(displayPosX, displayPosZ, resource);
 				}
 			}
 		}
 	}
 
-	private void renderItemIcon(int x, int y, ItemStack item) {
+	private void renderItemIcon(double x, double y, ItemStack item) {
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(0.5F, 0.5F, 0.5F);
-		GlStateManager.translate(x + 1, y + 1, 0.0F);
+		GlStateManager.translate(x, y, 0);
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GlStateManager.scale(iconScale, iconScale, iconScale);
+
 		mc.getRenderItem().renderItemIntoGUI(item, -8, -8);
-		GlStateManager.translate(-x - 1, -y - 1, 0.0F);
 		GlStateManager.disableLighting();
+
 		GlStateManager.popMatrix();
 	}
 
-	private void renderPlayerHeadIcon(int x, int y, EntityOtherPlayerMP player) throws Exception {
+	private void renderPlayerHeadIcon(double x, double y, EntityOtherPlayerMP player) throws Exception {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, config.getIconOpacity());
 		GlStateManager.enableBlend();
+
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(0.5F, 0.5F, 0.5F);
-		GlStateManager.translate(x + 1, y + 1, 0.0F);
+		GlStateManager.translate(x, y, 0);
 		GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
 
-		this.mc.getTextureManager().bindTexture(new NetworkPlayerInfo(player.getGameProfile()).getLocationSkin());
-		Gui.drawScaledCustomSizeModalRect(0, 0, 8, 8, 8, 8, 8, 8, 64, 64);
-		if (player.isWearing(EnumPlayerModelParts.HAT)) {
-			Gui.drawScaledCustomSizeModalRect(0, 0, 40, 8, 8, 8, 8, 8, 64, 64);
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(iconScale, iconScale, iconScale);
+
+		try {
+			GameProfile gameProfile = player.getGameProfile();
+			Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> texMap = mc.getSkinManager().loadSkinFromCache(gameProfile);
+			if (texMap.containsKey(SKIN)) {
+				MinecraftProfileTexture profileTexture = texMap.get(SKIN);
+				this.mc.getTextureManager().bindTexture(mc.getSkinManager().loadSkin(profileTexture, SKIN));
+				Gui.drawScaledCustomSizeModalRect(-8, -8, 8, 8, 8, 8, 16, 16, 64, 64);
+				if (player.isWearing(EnumPlayerModelParts.HAT)) {
+					Gui.drawScaledCustomSizeModalRect(-8, -8, 40, 8, 8, 8, 16, 16, 64, 64);
+				}
+			} else {
+				this.mc.getTextureManager().bindTexture(new ResourceLocation("civRadar/icons/player.png"));
+				Gui.drawScaledCustomSizeModalRect(-8, -8, 0, 0, 8, 8, 16, 16, 8, 8);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
 		GlStateManager.popMatrix();
-		
+
 		if (config.isPlayerNames()) {
 			GlStateManager.pushMatrix();
-			GlStateManager.scale(0.5F, 0.5F, 0.5F);
-			GlStateManager.translate(x - 8, y, 0.0F);
-			GlStateManager.rotate(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
-			GlStateManager.translate(-x, -y, 0.0F);
+			GlStateManager.scale(1 / radarScale, 1 / radarScale, 1 / radarScale);
+
 			String playerName = player.getName();
 			if (config.isExtraPlayerInfo()) {
 				playerName += " (" + (int) mc.thePlayer.getDistanceToEntity(player) + "m)(Y" + (int) player.posY + ")";
 			}
-			int yOffset = config.getNameLocation() == NameLocation.below ? 10 : -10;
-			drawCenteredString(mc.fontRendererObj, playerName, x + 8, y + yOffset, Color.WHITE.getRGB());
+			int yOffset = -4 + (int) ((config.getIconScale() * radarScale + 8) * (config.getNameLocation() == NameLocation.below ? 1 : -1));
+			drawCenteredString(mc.fontRendererObj, playerName, 0, yOffset, Color.WHITE.getRGB());
+
 			GlStateManager.popMatrix();
 		}
+
+		GlStateManager.popMatrix();
 	}
 
-	private void renderIcon(int x, int y, ResourceLocation resource) {
+	private void renderIcon(double x, double y, ResourceLocation resource) {
 		mc.getTextureManager().bindTexture(resource);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, config.getIconOpacity());
-		GL11.glEnable(GL11.GL_BLEND);
+		GlStateManager.enableBlend();
+
 		GL11.glPushMatrix();
-		GL11.glScalef(0.5F, 0.5F, 0.5F);
-		GL11.glTranslatef(x + 1, y + 1, 0.0F);
+		GL11.glTranslated(x, y, 0);
 		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GlStateManager.scale(iconScale, iconScale, iconScale);
+
 		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
-//		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_BLEND);
+
 		GL11.glPopMatrix();
+
+		GlStateManager.disableLighting();
+		GlStateManager.disableBlend();
 	}
 
 	private void renderWaypoint(Waypoint point, RenderWorldLastEvent event) {
+		// TODO update rendering
+		// when refactoring the rendering code, I did not test this, so it's probably not being displayed correctly
 		String name = point.getName();
 		Color c = point.getColor();
 		float partialTickTime = event.getPartialTicks();

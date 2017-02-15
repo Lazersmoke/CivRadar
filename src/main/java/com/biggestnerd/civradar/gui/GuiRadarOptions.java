@@ -17,24 +17,38 @@ public class GuiRadarOptions extends GuiScreen {
 	private GuiSlider scaleSlider;
 	private GuiButton coordToggle;
 	private GuiButton radarButton;
-	
+	private GuiSlider radarDistanceSlider;
+	private GuiSlider iconScaleSlider;
+
 	public GuiRadarOptions(GuiScreen parentScreen) {
 		this.parentScreen = parentScreen;
 	}
 	
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
+
 		this.buttonList.clear();
-		this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 - 16, 100, 20, "Reposition Radar"));
-		this.buttonList.add(new GuiButton(1, this.width / 2 + 1, this.height / 4 - 16, 100, 20, "Icon Settings"));
-		this.buttonList.add(opacitySlider = new GuiSlider(3, this.width / 2 -100, this.height / 4 + 8, 1.0F, 0.0F, "Radar Opacity", CivRadar.instance.getConfig().getRadarOpacity()));
-		this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 32, 100, 20, "Edit Radar Color"));
-		this.buttonList.add(new GuiButton(5, this.width / 2 + 1, this.height /4 + 32, 100, 20, "Edit Player Options"));
-		this.buttonList.add(scaleSlider = new GuiSlider(6, this.width / 2 - 100, this.height / 4 + 56, 1.0F, .1F, "Radar Size", CivRadar.instance.getConfig().getRadarSize()));
-		this.buttonList.add(coordToggle = new GuiButton(7, this.width / 2 - 100, this.height / 4 + 80, 100, 20, "Coordinates: "));
-		this.buttonList.add(new GuiButton(8, this.width / 2 + 1, this.height / 4 + 80, 100, 20, "Waypoint Shizz"));
-		this.buttonList.add(radarButton = new GuiButton(9, this.width / 2 - 100, this.height / 4 + 104, 100, 20, "Radar: "));
-		this.buttonList.add(new GuiButton(100, this.width / 2 - 100, this.height / 4 + 128, "Done"));
+		int y = this.height / 4 - 16;
+		this.buttonList.add(new GuiButton(0, this.width / 2 - 100, y, 100, 20, "Reposition Radar"));
+		this.buttonList.add(new GuiButton(4, this.width / 2 + 1, y, 100, 20, "Edit Radar Color"));
+		y += 24;
+		this.buttonList.add(opacitySlider = new GuiSlider(3, this.width / 2 -100, y, 1, 0, "Radar Opacity", CivRadar.instance.getConfig().getRadarOpacity()));
+		y += 24;
+		this.buttonList.add(scaleSlider = new GuiSlider(6, this.width / 2 - 100, y, 1, .1f, "Radar Size", CivRadar.instance.getConfig().getRadarSize()));
+		y += 24;
+		this.buttonList.add(new GuiButton(1, this.width / 2 - 100, y, 100, 20, "Icon Settings"));
+		this.buttonList.add(new GuiButton(5, this.width / 2 + 1, y, 100, 20, "Edit Player Options"));
+		y += 24;
+		int radarDistance = CivRadar.instance.getConfig().getRadarDistance();
+		this.buttonList.add(radarDistanceSlider = new GuiSlider(10, this.width / 2 - 100, y, 64, 8, "Entity Render Distance", radarDistance));
+		y += 24;
+		this.buttonList.add(iconScaleSlider = new GuiSlider(11, this.width / 2 - 100, y, radarDistance, .5f, "Icon Scale", CivRadar.instance.getConfig().getIconScale()));
+		y += 24;
+		this.buttonList.add(coordToggle = new GuiButton(7, this.width / 2 - 100, y, 100, 20, "Coordinates: "));
+		this.buttonList.add(new GuiButton(8, this.width / 2 + 1, y, 100, 20, "Waypoint Shizz"));
+		y += 24;
+		this.buttonList.add(radarButton = new GuiButton(9, this.width / 2 - 100, y, 100, 20, "Radar: "));
+		this.buttonList.add(new GuiButton(100, this.width / 2 + 1, y, 100, 20, "Done"));
 	}
 	
 	public void onGuiClosed() {
@@ -78,11 +92,18 @@ public class GuiRadarOptions extends GuiScreen {
 		Config config = CivRadar.instance.getConfig();
 		config.setRadarOpacity(opacitySlider.getCurrentValue());
 		config.setRadarSize(scaleSlider.getCurrentValue());
+		config.setRadarDistance((int) radarDistanceSlider.getCurrentValue());
+		config.setIconScale(iconScaleSlider.getCurrentValue());
+		CivRadar.instance.saveConfig();
+
+		iconScaleSlider.maxValue = config.getRadarDistance();
+
 		coordToggle.displayString = "Coordinates: " + (CivRadar.instance.getConfig().isRenderCoordinates() ? "On" : "Off");
 		radarButton.displayString = "Radar: " + (CivRadar.instance.getConfig().isEnabled() ? "On" : "Off");
-		CivRadar.instance.saveConfig();
 		opacitySlider.updateDisplayString();
 		scaleSlider.updateDisplayString();
+		radarDistanceSlider.updateDisplayString();
+		iconScaleSlider.updateDisplayString();
 	}
 	
 	public void drawScreen(int i, int j, float k) {

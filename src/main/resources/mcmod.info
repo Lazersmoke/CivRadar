@@ -8,9 +8,10 @@
 			"mcversion": "${mcversion}",
 			"version": "${version}",
 			"authorList": [
-				"TealNerd"
+				"TealNerd",
+				"Gjum",
+				"Ben"
 			],
-			"credits": "Ben",
 			"dependants": [  ],
 			"dependencies": [ "Forge@[${minforgeversion},)"],
 			"parent": "",
