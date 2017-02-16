@@ -215,6 +215,8 @@ public class RenderHandler extends Gui {
 			return;
 		}
 		for (Entity e : entityList) {
+			if (mc.thePlayer.getDistanceSq(e.posX, mc.thePlayer.posY, e.posZ) > config.getRadarDistance() * config.getRadarDistance())
+				continue; // outside radar range
 			if (e == mc.thePlayer)
 				continue;
 
