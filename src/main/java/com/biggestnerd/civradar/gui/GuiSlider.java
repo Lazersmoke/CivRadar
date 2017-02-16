@@ -12,7 +12,7 @@ import java.text.DecimalFormat;
 public class GuiSlider extends GuiButton {
 	public static DecimalFormat df = new DecimalFormat("#.##");
 
-	private float sliderValue = 0.5F;
+	float sliderValue = 0.5F;
 	private boolean dragging;
 	float minValue;
 	float maxValue;

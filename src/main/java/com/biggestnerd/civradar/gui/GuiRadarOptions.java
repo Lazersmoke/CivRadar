@@ -40,7 +40,7 @@ public class GuiRadarOptions extends GuiScreen {
 		this.buttonList.add(new GuiButton(5, this.width / 2 + 1, y, 100, 20, "Edit Player Options"));
 		y += 24;
 		int radarDistance = CivRadar.instance.getConfig().getRadarDistance();
-		this.buttonList.add(radarDistanceSlider = new GuiSlider(10, this.width / 2 - 100, y, 64, 8, "Entity Render Distance", radarDistance));
+		this.buttonList.add(radarDistanceSlider = new GuiSlider(10, this.width / 2 - 100, y, 7, 3, "Radar Range", (float) (Math.log(radarDistance) / Math.log(2))));
 		y += 24;
 		this.buttonList.add(iconScaleSlider = new GuiSlider(11, this.width / 2 - 100, y, radarDistance, .5f, "Icon Scale", CivRadar.instance.getConfig().getIconScale()));
 		y += 24;
@@ -92,7 +92,7 @@ public class GuiRadarOptions extends GuiScreen {
 		Config config = CivRadar.instance.getConfig();
 		config.setRadarOpacity(opacitySlider.getCurrentValue());
 		config.setRadarSize(scaleSlider.getCurrentValue());
-		config.setRadarDistance((int) radarDistanceSlider.getCurrentValue());
+		config.setRadarDistance((int) Math.pow(2, radarDistanceSlider.getCurrentValue()));
 		config.setIconScale(iconScaleSlider.getCurrentValue());
 		CivRadar.instance.saveConfig();
 
@@ -102,8 +102,8 @@ public class GuiRadarOptions extends GuiScreen {
 		radarButton.displayString = "Radar: " + (CivRadar.instance.getConfig().isEnabled() ? "On" : "Off");
 		opacitySlider.updateDisplayString();
 		scaleSlider.updateDisplayString();
-		radarDistanceSlider.updateDisplayString();
 		iconScaleSlider.updateDisplayString();
+		radarDistanceSlider.setDisplayString("" + config.getRadarDistance());
 	}
 	
 	public void drawScreen(int i, int j, float k) {
