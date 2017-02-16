@@ -62,21 +62,12 @@ public class RadarEntity {
 				EntityHorse horseEntity = (EntityHorse) entity;
 				int horseVariant = 0xff & horseEntity.getHorseVariant();
 				if(horseEntity.getType() == HorseType.HORSE) {
-					if (horseVariant < HORSE_VARIANTS.length) {
-						original = new ResourceLocation("minecraft", "textures/entity/horse/horse_" + HORSE_VARIANTS[horseVariant] + ".png");
-					} else {
-						original = null;
-					}
+					original = new ResourceLocation("minecraft", "textures/entity/horse/horse_" + HORSE_VARIANTS[horseVariant] + ".png");
 				} else {
-					original = HorseType.getArmorType(horseVariant).getTexture();
+					original = RadarHelper.getEntityTexture(render, entity);
 				}
 			} else {
 				original = RadarHelper.getEntityTexture(render, entity);
-			}
-
-			if (original == null) {
-				logger.error("Can't get entityTexture for " + entity.getClass() + " via " + render, (Throwable)null);
-				return null;
 			}
 
 			return new ResourceLocation(original.getResourceDomain(), original.getResourcePath().replace("/entity/", "/entity_icon_journeymap/"));
