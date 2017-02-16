@@ -143,19 +143,34 @@ public class RenderHandler extends Gui {
 		// eight concentric lines
 		GlStateManager.glBegin(GL11.GL_LINES);
 		final float cos45 = 0.7071f;
-		float diagonalOffset = cos45 * radarDisplayRadius;
-		GlStateManager.glVertex3f(0f, -radarDisplayRadius, 0f);
-		GlStateManager.glVertex3f(0f, radarDisplayRadius, 0f);
-		GlStateManager.glVertex3f(-radarDisplayRadius, 0f, 0f);
-		GlStateManager.glVertex3f(radarDisplayRadius, 0f, 0f);
-		GlStateManager.glVertex3f(-diagonalOffset, -diagonalOffset, 0f);
-		GlStateManager.glVertex3f(diagonalOffset, diagonalOffset, 0f);
-		GlStateManager.glVertex3f(-diagonalOffset, diagonalOffset, 0f);
-		GlStateManager.glVertex3f(diagonalOffset, -diagonalOffset, 0f);
+		float diagonalInner = cos45 * radarScale;
+		float diagonalOuter = cos45 * radarDisplayRadius;
+		GlStateManager.glVertex3f(0, -radarDisplayRadius, 0f);
+		GlStateManager.glVertex3f(0, -radarScale, 0f);
+		GlStateManager.glVertex3f(0, radarScale, 0f);
+		GlStateManager.glVertex3f(0, radarDisplayRadius, 0f);
+
+		GlStateManager.glVertex3f(-radarDisplayRadius, 0, 0f);
+		GlStateManager.glVertex3f(-radarScale, 0, 0f);
+		GlStateManager.glVertex3f(radarScale, 0, 0f);
+		GlStateManager.glVertex3f(radarDisplayRadius, 0, 0f);
+
+		GlStateManager.glVertex3f(-diagonalOuter, -diagonalOuter, 0f);
+		GlStateManager.glVertex3f(-diagonalInner, -diagonalInner, 0f);
+		GlStateManager.glVertex3f(diagonalInner, diagonalInner, 0f);
+		GlStateManager.glVertex3f(diagonalOuter, diagonalOuter, 0f);
+
+		GlStateManager.glVertex3f(-diagonalOuter, diagonalOuter, 0f);
+		GlStateManager.glVertex3f(-diagonalInner, diagonalInner, 0f);
+		GlStateManager.glVertex3f(diagonalInner, -diagonalInner, 0f);
+		GlStateManager.glVertex3f(diagonalOuter, -diagonalOuter, 0f);
+
 		GlStateManager.glEnd();
 
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
+
+		drawCircle(0, 0, radarScale, radarColor, false);
 
 		GlStateManager.pushMatrix();
 		GlStateManager.scale(radarScale, radarScale, radarScale);
