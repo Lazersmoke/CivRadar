@@ -1,0 +1,37 @@
+language: java
+jdk:
+- oraclejdk7
+
+install: true
+
+script:
+- "./gradlew reobf"
+
+branches:
+  only:
+  - master
+
+before_cache:
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -rf $HOME/.gradle/caches/*/fileHashes/
+- rm -rf $HOME/.gradle/caches/minecraft/deobfedDeps/
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+
+before_deploy:
+- git config --global user.email "builds@travis-ci.com"
+- git config --global user.name "Travis CI"
+- git tag -m "Development Build ${TRAVIS_BUILD_NUMBER}" "dev-build-${TRAVIS_BUILD_NUMBER}"
+- git push -q ${GITHUB_REPO} --tags
+deploy:
+  provider: releases
+  skip_cleanup: true
+  file: build/libs/*.jar
+  file_glob: true
+  prerelease: true
+  on:
+    tags: false # always deploy, tag gets created in before_deploy
+  api_key:
+    secure: zOYHEw2U2bH0WFvMGk1C1878kS72GG08DPG8mXw5LRzBw/9kVoiMbkA4avO4KDZ8wiH/zCPzWDtZlcvdWtlWc8zYxUkdZpd3nchffSif58kx6XxrEuN+tRKpQRi998PWhA4bqBlr6zqPu9R9FKAUXyHSo5JyHhBPfxBUUP7jfUD7FJ1DLdeOxrWZbsTGAjkYMvWFuaZ1uRzv/QExjJrwZYStIo/wnwH87llPaayMhZwS7MZXfYw+1N1VxgTWt9liDnJEpqexTYzqEKMVcUfuBkz4yUF+rJ3Ciowcdlb+JQjZhyvwZPd2kXrGnjJC/3RdXxQ4R9uqRzmI1mvFhRlB1PD+4btoeQKYZvcW8wMxEzIcViHAX5lKrxNqtiBI2bbhuzOFOrPiEQVhTdiTzZ08ZkCVwQeoNq3rEtz8y6IFJgCj7iC0zC0fh9kDFsdLo78mAlM3iA78Ll8tvk0V+NKtiJbcA2unnZVVoAOw8usBscJPA9vtRey7SeNuoYLfPrFZIw6fqUq18MCKFugSUdfid1JZwQmDwn1dY4waXMm7OGJG3kJHoIuU2/oUCGwTvzkukUEC9HzUHvrc68HltChOXHP5LUhUiWSAk8c2s5V1iMHdL6F0Rs2vnNp9JXQUYAMRMrVYB9w1UDs5dpB1wXXriLnObZljCF2ovrjX/+aiMy0=
