@@ -1,68 +1,87 @@
+import org.ajoberstar.grgit.Grgit
 
-// For those who want the bleeding edge
+import java.text.SimpleDateFormat
+
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
         maven {
-            name = 'forge'
-            url = 'http://files.minecraftforge.net/maven'
-        }
-        maven {
-            name = 'sonatype'
-            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
         }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'org.ajoberstar:grgit:1.1.0'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+ext {
+    head = Grgit.open(".").head()
+
+    forgeVsn = "1.10.2-12.18.3.2185"
+    if (System.getenv("FORGE_VERSION") != null) {
+        forgeVsn = System.getenv("FORGE_VERSION")
+    }
+    mcVsn = forgeVsn.split("-", 2)[0]
+}
+
+group = "com.tealnerd"
+archivesBaseName = "CivRadar-" + mcVsn
+
+version = "2.0.1"
+if (!head.shortMessage.matches("[Rr]elease v$version.*")) {
+    version = "${version}-pre-git-${head.abbreviatedId}+forge-$forgeVsn"
+    if (System.getenv("TRAVIS_BUILD_NUMBER") != null) {
+        version = String.format("%s-build-%s", version, System.getenv("TRAVIS_BUILD_NUMBER"))
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
-
-ext.build = System.getenv().BUILD_NUMBER ?: 'git'
-ext.modversion = "${project.version_major}.${project.version_minor}.${project.version_micro}.${build}"
-
-group = 'com.tealnerd'
-version = "${project.version_minecraft}-${modversion}"
-
-compileJava.options.encoding = 'UTF-8'
-
 minecraft {
-    version = "${project.version_minecraft}-${project.version_forge}"
+    version = forgeVsn
+    runDir = "run"
+    mappings = "snapshot_20160518"
 
-    if (project.hasProperty('version_mappings'))
-        mappings = project.version_mappings
-
-    if (!project.hasProperty('run_location'))
-        runDir = 'run'
-    else
-        runDir = run_location.replace('{modid}', project.name).replace('{mcversion}', project.version_minecraft)
-
-    replaceIn 'reference/Reference.java'
-    replace '${version}', modversion
-    replace '${mcversion}', project.version_minecraft
-    replace '${forgeversion}', project.version_forge
+    replaceIn "com/biggestnerd/civradar/CivRadar.java"
+    replace "@VERSION@", project.version
+    replace "@BUILD_TIME@", buildTime
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
+dependencies {
+    // put dependency jars in ./libs
+}
 
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    inputs.property "forgeVsn", project.forgeVsn
+
+    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
 
+        // replace version and mcversion
         expand([
-                'modid'          : project.name,
-                'version'        : modversion,
-                'mcversion'      : project.version_minecraft,
-                'forgeversion'   : project.version_forge,
-                'minforgeversion': project.hasProperty('version_minforge') ? project.version_minforge : project.version_forge
+            'version':project.version,
+            'mcversion':project.mcVsn,
+            'forgeVsn':project.forgeVsn,
         ])
     }
 
+    // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+def getBuildTime() {
+    def date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
+    date.setTimeZone(TimeZone.getTimeZone("UTC"))
+    return date.format(new Date())
 }

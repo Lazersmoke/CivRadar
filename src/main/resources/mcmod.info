@@ -13,9 +13,9 @@
 				"Ben"
 			],
 			"dependants": [  ],
-			"dependencies": [ "Forge@[${minforgeversion},)"],
+			"dependencies": [ "Forge@[${forgeVsn},)"],
 			"parent": "",
-			"requiredMods": [ "Forge@[${minforgeversion},)"],
+			"requiredMods": [ "Forge@[${forgeVsn},)"],
 			"logoFile": "",
 			"screenshots": [  ],
 			"useDependencyInformation": false
