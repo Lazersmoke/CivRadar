@@ -40,13 +40,13 @@ public class GuiAddWaypoint extends GuiScreen {
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
 		this.buttonList.clear();
-		textFieldList.add(waypointNameField = new GuiTextField(1, fontRendererObj, this.width / 2 - 100, this.height / 4 - 16, 200, 20));
-		textFieldList.add(waypointXField = new GuiTextField(2, fontRendererObj, this.width / 2 - 100, this.height / 4 + 8, 64, 20));
-		textFieldList.add(waypointYField = new GuiTextField(2, fontRendererObj, this.width / 2 - 32, this.height / 4 + 8, 64, 20));
-		textFieldList.add(waypointZField = new GuiTextField(2, fontRendererObj, this.width / 2 + 36, this.height / 4 + 8, 64, 20));
-		waypointXField.setText("" + (int) mc.thePlayer.posX);
-		waypointYField.setText("" + (int) mc.thePlayer.posY);
-		waypointZField.setText("" + (int) mc.thePlayer.posZ);
+		textFieldList.add(waypointNameField = new GuiTextField(1, fontRenderer, this.width / 2 - 100, this.height / 4 - 16, 200, 20));
+		textFieldList.add(waypointXField = new GuiTextField(2, fontRenderer, this.width / 2 - 100, this.height / 4 + 8, 64, 20));
+		textFieldList.add(waypointYField = new GuiTextField(2, fontRenderer, this.width / 2 - 32, this.height / 4 + 8, 64, 20));
+		textFieldList.add(waypointZField = new GuiTextField(2, fontRenderer, this.width / 2 + 36, this.height / 4 + 8, 64, 20));
+		waypointXField.setText("" + (int) mc.player.posX);
+		waypointYField.setText("" + (int) mc.player.posY);
+		waypointZField.setText("" + (int) mc.player.posZ);
 		Random random = new Random();
 		this.buttonList.add(redSlider = new GuiSlider(0, this.width / 2 - 100, this.height / 4 + 32, 1.0F, 0.0F, "Red", random.nextFloat()));
 		this.buttonList.add(greenSlider = new GuiSlider(0, this.width / 2 - 100, this.height / 4 + 56, 1.0F, 0.0F, "Green", random.nextFloat()));
@@ -120,7 +120,7 @@ public class GuiAddWaypoint extends GuiScreen {
 	
 	public void drawScreen(int i, int j, float k) {
 		drawDefaultBackground();
-		drawCenteredString(this.fontRendererObj, "Add Waypoint", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
+		drawCenteredString(this.fontRenderer, "Add Waypoint", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
 		for(GuiTextField field : textFieldList) {
 			field.drawTextBox();
 		}

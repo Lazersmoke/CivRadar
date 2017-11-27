@@ -78,7 +78,7 @@ public class GuiRepositionRadar extends GuiScreen {
 	}
 	
 	public void drawScreen(int i, int j, float k) {
-		drawCenteredString(mc.fontRendererObj, "Use arrow keys to reposition radar", this.width / 2, 80, Color.WHITE.getRGB());
+		drawCenteredString(mc.fontRenderer, "Use arrow keys to reposition radar", this.width / 2, 80, Color.WHITE.getRGB());
 		super.drawScreen(i, j, k);
 	}
 

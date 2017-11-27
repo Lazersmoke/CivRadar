@@ -74,8 +74,8 @@ public class GuiPlayerOptions extends GuiScreen {
 	
 	public void drawScreen(int i, int j, float k) {
 		drawDefaultBackground();
-		mc.fontRendererObj.drawString("Player names:", this.width / 2 - 50, this.height / 4 - 20, Color.WHITE.getRGB());
-		drawCenteredString(this.fontRendererObj, "Player Options", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
+		mc.fontRenderer.drawString("Player names:", this.width / 2 - 50, this.height / 4 - 20, Color.WHITE.getRGB());
+		drawCenteredString(this.fontRenderer, "Player Options", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
 		super.drawScreen(i, j, k);
 	}
 }

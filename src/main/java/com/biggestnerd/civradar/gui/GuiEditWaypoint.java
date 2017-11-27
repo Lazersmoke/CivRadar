@@ -42,10 +42,10 @@ public class GuiEditWaypoint extends GuiScreen {
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
 		this.buttonList.clear();
-		textFieldList.add(waypointNameField = new GuiTextField(1, fontRendererObj, this.width / 2 - 100, this.height / 4 - 16, 200, 20));
-		textFieldList.add(waypointXField = new GuiTextField(2, fontRendererObj, this.width / 2 - 100, this.height / 4 + 8, 64, 20));
-		textFieldList.add(waypointYField = new GuiTextField(2, fontRendererObj, this.width / 2 - 32, this.height / 4 + 8, 64, 20));
-		textFieldList.add(waypointZField = new GuiTextField(2, fontRendererObj, this.width / 2 + 36, this.height / 4 + 8, 64, 20));
+		textFieldList.add(waypointNameField = new GuiTextField(1, fontRenderer, this.width / 2 - 100, this.height / 4 - 16, 200, 20));
+		textFieldList.add(waypointXField = new GuiTextField(2, fontRenderer, this.width / 2 - 100, this.height / 4 + 8, 64, 20));
+		textFieldList.add(waypointYField = new GuiTextField(2, fontRenderer, this.width / 2 - 32, this.height / 4 + 8, 64, 20));
+		textFieldList.add(waypointZField = new GuiTextField(2, fontRenderer, this.width / 2 + 36, this.height / 4 + 8, 64, 20));
 		waypointNameField.setText(point.getName());
 		waypointXField.setText(String.valueOf((int)point.getX()));
 		waypointYField.setText(String.valueOf((int)point.getY()));
@@ -123,7 +123,7 @@ public class GuiEditWaypoint extends GuiScreen {
 	
 	public void drawScreen(int i, int j, float k) {
 		drawDefaultBackground();
-		drawCenteredString(this.fontRendererObj, "Edit Waypoint", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
+		drawCenteredString(this.fontRenderer, "Edit Waypoint", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
 		for(GuiTextField field : textFieldList) {
 			field.drawTextBox();
 		}

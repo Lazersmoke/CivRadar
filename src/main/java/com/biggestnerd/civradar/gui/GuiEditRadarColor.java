@@ -71,7 +71,7 @@ public class GuiEditRadarColor extends GuiScreen {
 	}
 	
 	public void drawScreen(int i, int j, float k) {
-		drawCenteredString(this.fontRendererObj, "Edit Radar Color", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
+		drawCenteredString(this.fontRenderer, "Edit Radar Color", this.width / 2, this.height / 4 - 40, Color.WHITE.getRGB());
 		super.drawScreen(i, j, k);
 	}
 }

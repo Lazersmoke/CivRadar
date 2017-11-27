@@ -10,13 +10,12 @@ import org.lwjgl.opengl.GL11;
 import com.biggestnerd.civradar.Config.NameLocation;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.Sound;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -26,7 +25,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -59,9 +57,9 @@ public class RenderHandler extends Gui {
 			GL11.glScalef(2.0f, 2.0f, 2.0f);
 			ScaledResolution res = new ScaledResolution(mc);
 			int halfWidth = res.getScaledWidth() / 4;
-			int stringWidth = mc.fontRendererObj.getStringWidth("Dank Memes Enabled");
+			int stringWidth = mc.fontRenderer.getStringWidth("Dank Memes Enabled");
 			int height = res.getScaledHeight() / 8;
-			mc.fontRendererObj.drawStringWithShadow("Dank Memes Enabled", halfWidth - (stringWidth / 2), height, dubstepColor.getRGB());
+			mc.fontRenderer.drawStringWithShadow("Dank Memes Enabled", halfWidth - (stringWidth / 2), height, dubstepColor.getRGB());
 			GL11.glScalef(1.0f, 1.0f, 1.0f);
 			GL11.glPopMatrix();
 			renderOverlayBox();
@@ -73,12 +71,12 @@ public class RenderHandler extends Gui {
 	
 	@SubscribeEvent
 	public void onTick(ClientTickEvent event) {
-		if(event.phase == TickEvent.Phase.START && mc.theWorld != null) {
+		if(event.phase == TickEvent.Phase.START && mc.world != null) {
 			if(pingDelay <= -10.0D) {
 				pingDelay = 63.0D;
 			}
 			pingDelay -= 1.0D;
-			entityList = mc.theWorld.loadedEntityList;
+			entityList = mc.world.loadedEntityList;
 			ArrayList<String> newInRangePlayers = new ArrayList();
 			for(Object o : entityList) {
 				if(o instanceof EntityOtherPlayerMP) {
@@ -88,7 +86,7 @@ public class RenderHandler extends Gui {
 			ArrayList<String> temp = (ArrayList)newInRangePlayers.clone();
 			newInRangePlayers.removeAll(inRangePlayers);
 			for(String name : newInRangePlayers) {	
-				mc.thePlayer.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), 1.0F);
+				mc.player.playSound(new SoundEvent(new ResourceLocation("block.note.pling")), config.getPingVolume(), 1.0F);
 			}
 			inRangePlayers = temp;
 			
@@ -107,7 +105,7 @@ public class RenderHandler extends Gui {
 		}
 		if(config.isRenderWaypoints()) {
 			for(Waypoint point : CivRadar.instance.getWaypointSave().getWaypoints()) {
-				if(point.getDimension() == mc.theWorld.provider.getDimension() && point.isEnabled()) {
+				if(point.getDimension() == mc.world.provider.getDimension() && point.isEnabled()) {
 					renderWaypoint(point, event);
 				}
 			}
@@ -126,11 +124,11 @@ public class RenderHandler extends Gui {
 		GL11.glTranslatef(width - (65 * radarScale) + (config.getRadarX()), (65 * radarScale) + (config.getRadarY()), 0.0F);
 		GL11.glScalef(1.0F, 1.0F, 1.0F);
 		if(config.isRenderCoordinates()) {
-			String coords = "(" + (int) mc.thePlayer.posX + "," + (int) mc.thePlayer.posY + "," + (int) mc.thePlayer.posZ + ")";
-			mc.fontRendererObj.drawStringWithShadow(coords, -(mc.fontRendererObj.getStringWidth(coords) / 2), 65 * radarScale, Color.WHITE.getRGB());
+			String coords = "(" + (int) mc.player.posX + "," + (int) mc.player.posY + "," + (int) mc.player.posZ + ")";
+			mc.fontRenderer.drawStringWithShadow(coords, -(mc.fontRenderer.getStringWidth(coords) / 2), 65 * radarScale, Color.WHITE.getRGB());
 		}
 		GL11.glScalef(radarScale, radarScale, radarScale);
-		GL11.glRotatef(-mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(-mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 		drawCircle(0, 0, 63.0D, radarColor, true);
 		GL11.glLineWidth(2.0F);
 		drawCircle(0, 0, 63.0D, radarColor, false);
@@ -160,7 +158,7 @@ public class RenderHandler extends Gui {
 		
 		drawRadarIcons();
 		
-		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 		
 		drawTriangle(0, 0, Color.WHITE);
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
@@ -210,19 +208,19 @@ public class RenderHandler extends Gui {
 		}
 		for(Object o : entityList) {
 			Entity e = (Entity) o;
-			int playerPosX = (int) mc.thePlayer.posX;
-			int playerPosZ = (int) mc.thePlayer.posZ;
+			int playerPosX = (int) mc.player.posX;
+			int playerPosZ = (int) mc.player.posZ;
 			int entityPosX = (int) e.posX;
 			int entityPosZ = (int) e.posZ;
 			int displayPosX = playerPosX - entityPosX;
 			int displayPosZ = playerPosZ - entityPosZ;
-			if(e != mc.thePlayer) {
+			if(e != mc.player) {
 				if(config.isDubstepMode()) {
 					renderPepe(displayPosX, displayPosZ);
 				} else if(e instanceof EntityItem) {
 					EntityItem item = (EntityItem) e;
 					if(config.isRender(EntityItem.class)) {
-						renderItemIcon(displayPosX, displayPosZ, item.getEntityItem());
+						renderItemIcon(displayPosX, displayPosZ, item.getItem());
 					}
 				} else if(e instanceof EntityOtherPlayerMP) {
 					if(config.isRender(EntityPlayer.class)) {
@@ -252,7 +250,7 @@ public class RenderHandler extends Gui {
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5F, 0.5F, 0.5F);
 		GL11.glTranslatef(x + 1, y + 1, 0.0F);
-		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
 		GL11.glTranslatef(-x -1, -y -1, 0.0F);
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
@@ -266,7 +264,7 @@ public class RenderHandler extends Gui {
 		GL11.glScalef(0.5F, 0.5F, 0.5F);
 		GL11.glTranslatef(x +1, y +1, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, config.getIconOpacity());
-		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 		mc.getRenderItem().renderItemIntoGUI(item, -8, -8);
 		GL11.glTranslatef(-x -1, -y -1, 0.0F);
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
@@ -280,7 +278,7 @@ public class RenderHandler extends Gui {
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5F, 0.5F, 0.5F);
 		GL11.glTranslatef(x + 1, y + 1, 0.0F);
-		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 		mc.getTextureManager().bindTexture(new ResourceLocation("civRadar/icons/player.png"));
 		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
 		GL11.glTranslatef(-x -1, -y -1, 0.0F);
@@ -292,14 +290,14 @@ public class RenderHandler extends Gui {
 			GL11.glPushMatrix();
 			GL11.glScalef(0.5F, 0.5F, 0.5F);
 			GL11.glTranslatef(x - 8, y, 0.0F);
-			GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+			GL11.glRotatef(mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 			GL11.glTranslatef(-x, -y, 0.0F);
 			String playerName = player.getName();
 			if(config.isExtraPlayerInfo()) {
-				playerName += " (" + (int) mc.thePlayer.getDistanceToEntity(player) + "m)(Y" + (int) player.posY + ")";
+				playerName += " (" + (int) mc.player.getDistance(player) + "m)(Y" + (int) player.posY + ")";
 			}
 			int yOffset = config.getNameLocation() == NameLocation.below ? 10 : -10;
-			drawCenteredString(mc.fontRendererObj, playerName, x + 8, y + yOffset, Color.WHITE.getRGB());
+			drawCenteredString(mc.fontRenderer, playerName, x + 8, y + yOffset, Color.WHITE.getRGB());
 			GL11.glScalef(2.0F, 2.0F, 2.0F);
 			GL11.glPopMatrix();
 		}
@@ -312,7 +310,7 @@ public class RenderHandler extends Gui {
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5F, 0.5F, 0.5F);
 		GL11.glTranslatef(x + 1, y + 1, 0.0F);
-		GL11.glRotatef(mc.thePlayer.rotationYaw, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(mc.player.rotationYaw, 0.0F, 0.0F, 1.0F);
 		drawModalRectWithCustomSizedTexture(-8, -8, 0, 0, 16, 16, 16, 16);
 		GL11.glTranslatef(-x -1, -y -1, 0.0F);
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
@@ -328,14 +326,14 @@ public class RenderHandler extends Gui {
 		double distance = point.getDistance(mc);
 		int maxView = mc.gameSettings.renderDistanceChunks * 22;
 		if(distance <= config.getMaxWaypointDistance() || config.getMaxWaypointDistance() < 0) {
-			FontRenderer fr = mc.fontRendererObj;
+			FontRenderer fr = mc.fontRenderer;
 			Tessellator tess = Tessellator.getInstance();
-			VertexBuffer vb = tess.getBuffer();
+			BufferBuilder vb = tess.getBuffer();
 			RenderManager rm = mc.getRenderManager();
 			
-			float playerX = (float) (mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * partialTickTime);
-			float playerY = (float) (mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * partialTickTime);
-			float playerZ = (float) (mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * partialTickTime);
+			float playerX = (float) (mc.player.lastTickPosX + (mc.player.posX - mc.player.lastTickPosX) * partialTickTime);
+			float playerY = (float) (mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime);
+			float playerZ = (float) (mc.player.lastTickPosZ + (mc.player.posZ - mc.player.lastTickPosZ) * partialTickTime);
 			
 			float displayX = (float)point.getX() - playerX;
 			float displayY = (float)point.getY() + 1.3f - playerY;
@@ -399,7 +397,7 @@ public class RenderHandler extends Gui {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer vb = tess.getBuffer();
+		BufferBuilder vb = tess.getBuffer();
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		vb.color(dubstepColorBox.getRed() / 255.0F, dubstepColorBox.getGreen() / 255.0F, dubstepColorBox.getBlue() / 255.0F, 0.15F);
 		vb.pos(0.0D, (double)mc.displayHeight, 0.0D);

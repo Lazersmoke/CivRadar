@@ -94,7 +94,7 @@ public class GuiWaypointList extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.waypointListContainer.drawScreen(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRendererObj, "Waypoint List", this.width / 2, 20, 16777215);
+        this.drawCenteredString(this.fontRenderer, "Waypoint List", this.width / 2, 20, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 	
@@ -134,9 +134,9 @@ public class GuiWaypointList extends GuiScreen {
 			GuiWaypointList.this.drawDefaultBackground();
 		}
 		
-		protected void drawSlot(int entryId, int par2, int par3, int par4, int par5, int par6) {
+		protected void drawSlot(int entryId, int par2, int par3, int par4, int par5, int par6, float par7) {
 			Waypoint point = GuiWaypointList.this.waypointList.get(entryId);
-			GuiWaypointList.this.drawString(mc.fontRendererObj, point.getName(), par2 + 1, par3 + 1, Color.WHITE.getRGB());
+			GuiWaypointList.this.drawString(mc.fontRenderer, point.getName(), par2 + 1, par3 + 1, Color.WHITE.getRGB());
 			String dimension = "null";
 			if(point.getDimension() == 0) {
 				dimension = "overworld";
@@ -146,8 +146,8 @@ public class GuiWaypointList extends GuiScreen {
 				dimension = "nether";
 			}
 			String coords = "(" + (int)point.getX() + "," + (int)point.getY() + "," + (int)point.getZ() + ") Dimension: " + dimension;
-			GuiWaypointList.this.drawString(mc.fontRendererObj, coords, par2 + 1, par3 + 13, point.getColor().getRGB());
-			GuiWaypointList.this.drawString(mc.fontRendererObj, point.isEnabled() ? "Enabled" : "Disabled", par2 + 215 - mc.fontRendererObj.getStringWidth("Disabled"), par3 + 1, point.isEnabled() ? Color.GREEN.getRGB() : Color.RED.getRGB());
+			GuiWaypointList.this.drawString(mc.fontRenderer, coords, par2 + 1, par3 + 13, point.getColor().getRGB());
+			GuiWaypointList.this.drawString(mc.fontRenderer, point.isEnabled() ? "Enabled" : "Disabled", par2 + 215 - mc.fontRenderer.getStringWidth("Disabled"), par3 + 1, point.isEnabled() ? Color.GREEN.getRGB() : Color.RED.getRGB());
 		}
 	}
 }
